@@ -2,14 +2,18 @@ import json
 import os
 from bs4 import BeautifulSoup
 import re
+import copy
+import nltk
+# nltk.download('punkt')
+from nltk.stem import PorterStemmer
 
-# UNCOMMENTT THIS BASED ON WHO'S COMPUTER IS BEING USED
+# UNCOMMENT THIS BASED ON WHO'S COMPUTER IS BEING USED
 
 # Kaeley:
-dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV'
+#dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV'
 
 # Areeta:
-# dev_directory = ''
+dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 
 # Cristian:
 # dev_directory = ''
@@ -21,78 +25,82 @@ inverse_index = dict()
 docid_counter = 0  # for naming docID
 
 
-def tokenizer(data):
-    """ Takes in a string and returns a set of valid alphanumeric sequences """
-    data = data.split()
-    word_set = set()
+def tokenizes(data):
+    # tokenizes and stems with ntlk
+    ps = PorterStemmer()
+    tokenizer = nltk.RegexpTokenizer(r"\w+")
+    tokens = tokenizer.tokenize(data)
 
-    for word in data:
-        if word.isalpha() and len(word) > 1:
-            word_set.add(word.lower())
+    # removes words that shouldn't be considered
+    copy_list = copy.deepcopy(tokens)
+    for word in copy_list:
+        if len(word) < 3:
+            tokens.remove(word)
 
-        else:
-            """ Words that contain a non-alphanumeric character are
-            split and counted into individual sequences. """
+        # checks if stemming
+        root_word = ps.stem(word)
+        if word != root_word:
+            tokens.remove(word)
+            tokens.append(root_word)
 
-            non_alpha = ""
-            for letter in word:
-                if not letter.isalnum():
-                    non_alpha = letter
-
-            if non_alpha != "": #A nonalphanumeric char is present
-                split_word = word.split(non_alpha)
-
-                # Handling hyphens, apostrophes, and end punctuation
-                if non_alpha in "-'.,!?:;()[]{}*":
-                    for fragment in split_word:
-                        # The fragment must be an alphanumeric sequence
-                        if len(fragment) > 1 and fragment.isalpha():
-                            word_set.add(fragment.lower())
-
-    return word_set
+    return tokens
 
 
-def add_to_index(words, ID):
-    # 0.000 = tf-idf score (need to compute)
-    for word in words:
+def computeTF():
+    # TO-DO
+    return 0.0
+
+
+def computeIDF():
+    # TO-DO
+    return 0.0
+
+
+def computeTFIDF():
+    # TO-DO: formula is tf-idf(t, d) = tf(t, d) * log(N/(df + 1))
+    return 0.0
+
+
+def add_to_index(document_words, docid_counter):
+    # value should document name/id token was found in
+    # and tf-idf score (need to compute)
+    for word in document_words:
+        amount_of_times_found_in_doc = document_words.count(word)
+        # find later
+        # tfidf_score = 0.0
         if word not in inverse_index:
-            inverse_index[word] = [{ID: "0.000"}]
+            inverse_index[word] = [{"Document ID": [docid_counter]}, amount_of_times_found_in_doc]
         else:
-            inverse_index[word].append({ID: "0.000"})
-
-
-def get_docname(counter):
-    return "doc" + str(counter)
+            inverse_index[word][0]["Document ID"].append(docid_counter)
 
 
 for subdir, dirs, files in os.walk(dev_directory):
     for file in files:
         docid_counter += 1
-        document_words = set()
+        # document_words = set()
         json_file = os.path.join(subdir, file)
 
         try:
             soup = BeautifulSoup(open(json_file), 'html.parser')
             for text in soup.findAll(["title", "p", "b", re.compile('^h[1-6]$')]):
                 data = text.get_text().strip()
-                alphanumeric_sequences = tokenizer(data)  # set - no duplicates]
-                document_words |= alphanumeric_sequences
 
-            doc_id = get_docname(docid_counter)
-            add_to_index(document_words, doc_id)
+                # has duplicates to check variance of appearance in doc
+                alphanumeric_sequences = tokenizes(data)
+                # document_words |= alphanumeric_sequences
+
+            add_to_index(alphanumeric_sequences, docid_counter)
             print("current file:", json_file)
-        except:
-            print("error at", json_file)
+        except Exception as e:
+            print("error at", e)
 
-# Organize this in a table for submission
-#for key, value in inverse_index.items():
-#    print(key, value)
+# for deliverable 1
+deliverable_text = open('/Users/AreetaW/Desktop/deliverable.txt', 'w')
+for key, value in inverse_index.items():
+    deliverable_text.write(str(key) + ":     " + str(value) + "\n")
+deliverable_text.close()
+
 
 print("\nREPORT")
 print("Number of documents:", docid_counter)
 print("Number of unique tokens:", len(inverse_index))
-
-
-
-
-
