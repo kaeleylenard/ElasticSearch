@@ -36,13 +36,12 @@ def tokenizes(data):
     for word in copy_list:
         if len(word) < 3:
             tokens.remove(word)
-
-        # checks if stemming
-        root_word = ps.stem(word)
-        if word != root_word:
-            tokens.remove(word)
-            tokens.append(root_word)
-
+        else:
+            # checks if stemming
+            root_word = ps.stem(word)
+            if word != root_word:
+                tokens.remove(word)
+                tokens.append(root_word)
     return tokens
 
 
