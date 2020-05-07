@@ -70,7 +70,7 @@ def add_to_index(document_words, docid_counter):
         if word not in inverse_index:
             inverse_index[word] = set((docid_counter, tfidf_score))
         else:
-            inverse_index.append((docid_counter, tfidf_score))
+            inverse_index[word].add((docid_counter, tfidf_score))
 
 
 for subdir, dirs, files in os.walk(dev_directory):
