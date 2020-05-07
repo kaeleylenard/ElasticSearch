@@ -68,7 +68,9 @@ def add_to_index(document_words, docid_counter):
     for word in document_words:
         tfidf_score = 0.0
         if word not in inverse_index:
-            inverse_index[word] = set((docid_counter, tfidf_score))
+            first_appearance = (docid_counter, tfidf_score)
+            inverse_index[word] = set()
+            inverse_index[word].add(first_appearance)
         else:
             inverse_index[word].add((docid_counter, tfidf_score))
 
@@ -97,5 +99,5 @@ deliverable_text.close()
 
 
 print("\nREPORT")
-print("Number of documents:", docid_counter)
-print("Number of unique tokens:", len(inverse_index))
+print("Number of Indexed Documents:", docid_counter)
+print("Number of Unique Words:", len(inverse_index))
