@@ -28,21 +28,22 @@ docid_counter = 0  # for naming docID
 def tokenizes(data):
     # tokenizes and stems with ntlk
     ps = PorterStemmer()
-    tokenizer = nltk.RegexpTokenizer(r"\w+")
-    tokens = tokenizer.tokenize(data)
+    #tokenizer = nltk.RegexpTokenizer(r"\w+")
+    #tokens = tokenizer.tokenize(data)
+    tokens = nltk.word_tokenize(data)
 
     # removes words that shouldn't be considered
     copy_list = copy.deepcopy(tokens)
     for word in copy_list:
-        if len(word) < 3:
+        if len(word) < 2:
             tokens.remove(word)
         else:
             # checks if stemming
-            root_word = ps.stem(word)
-            if word != root_word:
-                tokens.remove(word)
-                tokens.append(root_word)
-    return tokens
+            ps.stem(word)
+            #if word != root_word:
+                #tokens.remove(word)
+                #tokens.append(root_word)
+    return set(tokens)
 
 
 def compute_tf(token, tokens):
