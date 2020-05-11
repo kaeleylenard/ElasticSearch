@@ -8,6 +8,7 @@ import nltk
 from nltk.stem import PorterStemmer
 import json
 import time
+import demjson
 
 # UNCOMMENT THIS BASED ON WHOSE COMPUTER IS BEING USED
 
@@ -18,8 +19,8 @@ import time
 #dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 
 # Cristian:
-dev_directory = 'C:\Test\DEV'
-
+#dev_directory = 'C:\Test\DEV'
+dev_directory = 'C:\Test\custom'
 # to check:
 #print(os.path.exists(dev_directory))
 
@@ -74,10 +75,10 @@ def add_to_index(document_words, docid_counter):
         tfidf_score = 0.0
         if word not in inverse_index:
             first_appearance = (docid_counter, tfidf_score)
-            inverse_index[word] = list()   # LMAO INCORRECT SHOULD BE A SET but wasn't working with json
-            inverse_index[word].append(first_appearance)
+            inverse_index[word] = set()   # Now works with aid of demjson package
+            inverse_index[word].add(first_appearance)
         else:
-            inverse_index[word].append((docid_counter, tfidf_score))
+            inverse_index[word].add((docid_counter, tfidf_score))
 
 
 def write_to_file():
@@ -119,7 +120,7 @@ total_docs += docid_counter
 # for deliverable 1
 deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
 with deliverable_text as json_file:
-    json.dump(inverse_index, json_file)
+    json.dump(demjson.encode(inverse_index), json_file)
 deliverable_text.close()
 
 
@@ -129,6 +130,7 @@ with open('C:\Test\data.txt', 'w') as json_file:
         print(index, type(index))
         with open(index) as file:
             data = json.load(file)
+            data = demjson.decode(data)
         json.dump(data, json_file)
 
 print("\nREPORT")
