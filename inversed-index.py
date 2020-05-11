@@ -19,8 +19,9 @@ import demjson
 #dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 
 # Cristian:
-#dev_directory = 'C:\Test\DEV'
-dev_directory = 'C:\Test\custom'
+dev_directory = 'C:\Test\DEV'
+#dev_directory = 'C:\Test\custom'
+
 # to check:
 #print(os.path.exists(dev_directory))
 
@@ -42,9 +43,9 @@ def tokenizes(data):
     # removes words that shouldn't be considered
     tokenized = nltk.word_tokenize(data)
     for item in tokenized:
-        if item.isalnum() and len(item) >= 2:
-                #add only stems
-                tokens.append(ps.stem(item))
+        if re.sub('[A-Za-z0-9]+', '', str(data)) and len(item) >= 2:
+            # add only stems
+            tokens.append(ps.stem(item))
     return tokens
 
 
@@ -94,7 +95,7 @@ def write_to_file():
     docid_counter = 0
     deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     with deliverable_text as json_file:
-        json.dump(inverse_index, json_file)
+        json.dump(demjson.encode(inverse_index), json_file)
     deliverable_text.close()
     inverse_index.clear()
 
@@ -104,7 +105,7 @@ for subdir, dirs, files in os.walk(dev_directory):
         docid_counter += 1
         json_file = os.path.join(subdir, file)
         alphanumeric_sequences = []
-        print(f"current file {docid_counter} {index_count} {word_count} :", json_file)
+        print(f"current file {docid_counter} {index_count} {total_docs} :", json_file)
         try:
             soup = BeautifulSoup(open(json_file), 'html.parser')
             for text in soup.findAll(["title", "p", "b", re.compile('^h[1-6]$')]):
