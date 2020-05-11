@@ -7,6 +7,7 @@ import nltk
 # nltk.download('punkt')
 from nltk.stem import PorterStemmer
 import json
+import time
 
 # UNCOMMENT THIS BASED ON WHOSE COMPUTER IS BEING USED
 
@@ -96,8 +97,7 @@ def write_to_file():
     deliverable_text.close()
     inverse_index.clear()
 
-
-
+start_time = time.time()
 for subdir, dirs, files in os.walk(dev_directory):
     for file in files:
         docid_counter += 1
@@ -134,3 +134,4 @@ with open('C:\Test\data.txt', 'w') as json_file:
 print("\nREPORT")
 print("Number of Indexed Documents:", total_docs)
 print("Number of Unique Words:", word_count)
+print("--- %s seconds ---" % (time.time() - start_time))
