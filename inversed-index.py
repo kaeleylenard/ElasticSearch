@@ -1,28 +1,22 @@
-import json
 import os
 from bs4 import BeautifulSoup
 import re
-import copy
-import nltk
-# nltk.download('punkt')
 from nltk.stem import PorterStemmer
 import json
 import time
 import demjson
 
-# UNCOMMENT THIS BASED ON WHOSE COMPUTER IS BEING USED
 
 # Kaeley:
-#dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV'
+dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/SearchEngine/DEV/www_ics_uci_edu'
 
 # Areeta:
 #dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 
 # Cristian:
 #dev_directory = 'C:\Test\DEV'
-dev_directory = 'C:\Test\custom'
-# to check:
-#print(os.path.exists(dev_directory))
+#dev_directory = 'C:\Test\custom'
+
 
 inverse_index = dict()
 docid_counter = 0  # for naming docID
@@ -32,19 +26,15 @@ total_docs = 0
 
 
 def tokenizes(data):
-    # tokenizes and stems with ntlk
-    ps = PorterStemmer()
-    #tokenizer = nltk.RegexpTokenizer(r"\w+")
-    #tokens = tokenizer.tokenize(data)
+    data = data.split()  # split sentence into words
     tokens = list()
+    ps = PorterStemmer()
 
+    for word in data:
+        tokenized = re.sub('[^A-Za-z0-9]+', ' ', str(word))
+        if len(tokenized) >= 2:
+            tokens.append(ps.stem(tokenized))
 
-    # removes words that shouldn't be considered
-    tokenized = nltk.word_tokenize(data)
-    for item in tokenized:
-        if item.isalnum() and len(item) >= 2:
-                #add only stems
-                tokens.append(ps.stem(item))
     return tokens
 
 
@@ -66,6 +56,7 @@ def compute_tfidf():
 
 
 def add_to_index(document_words, docid_counter):
+    """ document_words are the tokenized words in the current file """
     # value should document name/id token was found in
     # and tf-idf score (need to compute)
     if docid_counter % 11000 == 0:
@@ -92,46 +83,71 @@ def write_to_file():
     total_docs += docid_counter
     index_count += 1
     docid_counter = 0
-    deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+
+    # Cristian:
+    #deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+    # Kaeley:
+    deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+    # Areeta:
+    #deliverable_text = open()
+
     with deliverable_text as json_file:
-        json.dump(inverse_index, json_file)
+        json.dump(demjson.encode(inverse_index), json_file)
     deliverable_text.close()
     inverse_index.clear()
 
+# START
 start_time = time.time()
 for subdir, dirs, files in os.walk(dev_directory):
     for file in files:
         docid_counter += 1
         json_file = os.path.join(subdir, file)
-        alphanumeric_sequences = []
+        alphanumeric_sequences = []  # tokenized data in the current file
         print(f"current file {docid_counter} {index_count} {word_count} :", json_file)
         try:
             soup = BeautifulSoup(open(json_file), 'html.parser')
             for text in soup.findAll(["title", "p", "b", re.compile('^h[1-6]$')]):
-                data = text.get_text().strip()
+                data = text.get_text().strip()  # text in the tag
                 alphanumeric_sequences += tokenizes(data)
             add_to_index(alphanumeric_sequences, docid_counter)
         except Exception as e:
             print("error at:", e)
 
+
 word_count += len(inverse_index)
 index_count += 1
 total_docs += docid_counter
-# for deliverable 1
-deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+
+# Cristian
+#deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+# Kaeley
+deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+# Areeta
+#deliverable_text = open()
+
 with deliverable_text as json_file:
     json.dump(demjson.encode(inverse_index), json_file)
 deliverable_text.close()
 
+# Cristian
+#file_list = [f'C:\Test\info{x+1}.txt' for x in range(index_count)]
+# Kaeley
+file_list = [f'/Users/kaeleylenard/Desktop/info{x+1}.txt' for x in range(index_count)]
+# Areeta
+#file_list = []
 
-file_list = [f'C:\Test\info{x+1}.txt' for x in range(index_count)]
-with open('C:\Test\data.txt', 'w') as json_file:
+# Cristian
+#with open('C:\Test\data.txt', 'w') as json_file:
+# Kaeley
+with open('/Users/kaeleylenard/Desktop/data.txt', 'w') as json_file:
+# Areeta
+#with open()
     for index in file_list:
-        print(index, type(index))
         with open(index) as file:
             data = json.load(file)
             data = demjson.decode(data)
         json.dump(data, json_file)
+
 
 print("\nREPORT")
 print("Number of Indexed Documents:", total_docs)
