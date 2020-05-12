@@ -48,6 +48,7 @@ def add_to_index(document_words, docid_counter):
         freq_of_token = float(document_words.count(word))
         amount_of_words = float(len(document_words))
         tf_score = freq_of_token/amount_of_words
+        tf_score = round(tf_score, 5)
 
         if word not in inverse_index:
             first_appearance = (docid_counter, tf_score)
@@ -131,7 +132,7 @@ with open('/Users/AreetaW/Desktop/data.txt', 'w') as json_file:
     for index in file_list:
         with open(index) as file:
             data = json.load(file)
-            data = demjson.decode(data)
+            # data = demjson.decode(data)
         json.dump(data, json_file)
 
 
