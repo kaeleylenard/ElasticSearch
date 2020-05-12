@@ -5,6 +5,7 @@ from nltk.stem import PorterStemmer
 import json
 import time
 import demjson
+import pandas
 
 
 # Kaeley:
@@ -32,6 +33,8 @@ def tokenizes(data):
 
     for word in data:
         tokenized = re.sub('[^A-Za-z0-9]+', ' ', str(word))
+        tokenized = re.sub('[^A-Za-z0-9].', ' ', str(tokenized))
+        tokenized = tokenized.replace(' ', '')
         if len(tokenized) >= 2:
             tokens.append(ps.stem(tokenized))
 
@@ -71,14 +74,15 @@ def write_to_file():
     docid_counter = 0
 
     # Cristian:
-    #deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+    # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     # Kaeley:
     # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
     # Areeta:
     deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
 
     with deliverable_text as json_file:
-        json.dump(demjson.encode(inverse_index), json_file)
+        inverse_index = {k: list(v) for k, v in sorted(inverse_index.items())}  # Sorts dict by key
+        json.dump(inverse_index, json_file)
     deliverable_text.close()
     inverse_index.clear()
 
@@ -113,7 +117,8 @@ total_docs += docid_counter
 deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
 
 with deliverable_text as json_file:
-    json.dump(demjson.encode(inverse_index), json_file)
+    inverse_index = {k: list(v) for k, v in sorted(inverse_index.items())}
+    json.dump(inverse_index, json_file)
 deliverable_text.close()
 
 # Cristian
@@ -127,14 +132,21 @@ file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)
 # with open('C:\Test\data.txt', 'w') as json_file:
 # Kaeley
 # with open('/Users/kaeleylenard/Desktop/data.txt', 'w') as json_file:
-    # Areeta
+# Areeta
 with open('/Users/AreetaW/Desktop/data.txt', 'w') as json_file:
-    for index in file_list:
-        with open(index) as file:
-            data = json.load(file)
-            # data = demjson.decode(data)
-        json.dump(data, json_file)
+    bases = []    # Use of pandas to merge all json files alphabetically
+    for file in file_list:
+        temp = pandas.read_json(file, orient='index')
+        bases.append(temp)
+    result = pandas.concat(bases) # This should hold all json files as one big pandas dataframe
 
+    # Cristian
+    # result.to_csv("C:\Test\/finalindex.csv")
+    # Kaeley
+    # 
+    # Areeta
+    result.to_csv('/Users/AreetaW/Desktop/finalindex.csv')
+    
 
 # Statistics
 print("\nREPORT")
