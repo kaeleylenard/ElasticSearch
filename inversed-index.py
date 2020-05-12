@@ -1,12 +1,7 @@
 import os
 from bs4 import BeautifulSoup
 import re
-import copy
-import nltk
-from nltk.tokenize import word_tokenize
-# nltk.download('punkt')
 from nltk.stem import PorterStemmer
-import math
 import json
 import time
 import demjson
@@ -34,10 +29,12 @@ def tokenizes(data):
     data = data.split()  # split sentence into words
     tokens = list()
     ps = PorterStemmer()
+
     for word in data:
         tokenized = re.sub('[^A-Za-z0-9]+', ' ', str(word))
         if len(tokenized) >= 2:
             tokens.append(ps.stem(tokenized))
+
     return tokens
 
 
@@ -47,7 +44,7 @@ def add_to_index(document_words, docid_counter):
         write_to_file()
 
     for word in document_words:
-        # calculate tf score, freq of token in an entire doc
+        # calculates tf score
         freq_of_token = float(document_words.count(word))
         amount_of_words = float(len(document_words))
         tf_score = freq_of_token/amount_of_words
@@ -73,7 +70,7 @@ def write_to_file():
     docid_counter = 0
 
     # Cristian:
-    # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+    #deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     # Kaeley:
     # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
     # Areeta:
@@ -103,15 +100,6 @@ for subdir, dirs, files in os.walk(dev_directory):
             print("error at:", e)
 
 
-# for deliverable 1
-deliverable_text = open('/Users/AreetaW/Desktop/deliverable.txt', 'w')
-for key, value in inverse_index.items():
-    # find inverse of (total number of docs/number of docs with token in it)
-    for v in value:
-        v[1] *= math.log(float(docid_counter)/float(len(inverse_index[key])))
-    deliverable_text.write(str(key) + ":     " + str(value) + "\n")
-deliverable_text.close()
-
 word_count += len(inverse_index)
 index_count += 1
 total_docs += docid_counter
@@ -138,13 +126,14 @@ file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)
 # with open('C:\Test\data.txt', 'w') as json_file:
 # Kaeley
 # with open('/Users/kaeleylenard/Desktop/data.txt', 'w') as json_file:
-# Areeta
+    # Areeta
 with open('/Users/AreetaW/Desktop/data.txt', 'w') as json_file:
     for index in file_list:
         with open(index) as file:
             data = json.load(file)
             data = demjson.decode(data)
         json.dump(data, json_file)
+
 
 # Statistics
 print("\nREPORT")
