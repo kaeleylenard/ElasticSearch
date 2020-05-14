@@ -11,7 +11,7 @@ import pandas
 # Areeta:
 dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 # Cristian:
-dev_directory = 'C:\Test\DEV'
+# dev_directory = 'C:\Test\DEV'
 # dev_directory = 'C:\Test\custom'
 
 
@@ -47,6 +47,7 @@ def write_to_file():
     index_count += 1
     docid_counter = 0
 
+    # Kaeley:
     #deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
     # Areeta:
     deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
@@ -124,7 +125,6 @@ def partial_indexing():
     result = pandas.concat(bases)  
 
     # exports into excel
-
     # Kaeley:
     # result.to_csv()
     # Areeta:
@@ -136,6 +136,7 @@ def partial_indexing():
 if __name__ == "__main__":
     # tracks time taken to complete indexing
     start_time = time.time()
+
     # loops through all files in DEV
     for subdir, dirs, files in os.walk(dev_directory):
         for file in files:
