@@ -4,7 +4,6 @@ import re
 from nltk.stem import PorterStemmer
 import json
 import time
-import demjson
 import pandas
 
 # Kaeley:
@@ -12,7 +11,7 @@ import pandas
 # Areeta:
 dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 # Cristian:
-# dev_directory = 'C:\Test\DEV'
+dev_directory = 'C:\Test\DEV'
 # dev_directory = 'C:\Test\custom'
 
 
@@ -48,15 +47,15 @@ def write_to_file():
     index_count += 1
     docid_counter = 0
 
-    # Kaeley:
-    # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+    #deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
     # Areeta:
     deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
     # Cristian:
-    # deliverable_text = open()
+    # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
 
     with deliverable_text as json_file:
-        json.dump(demjson.encode(inverse_index), json_file)
+        inverse_index = {k: list(v) for k, v in sorted(inverse_index.items())}  # Sorts dict by key
+        json.dump(inverse_index, json_file)  # Pretty printing
     deliverable_text.close()
     inverse_index.clear()
 
@@ -100,11 +99,12 @@ def partial_indexing():
     # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
     # Areeta:
     deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
-    # Cristian:
-    # deliverable_text = open()
+    # Cristian
+    # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
 
     with deliverable_text as json_file:
-        json.dump(demjson.encode(inverse_index), json_file)
+        inverse_index = {k: list(v) for k, v in sorted(inverse_index.items())}
+        json.dump(inverse_index, json_file)
     deliverable_text.close()
 
     # Kaeley:
@@ -112,45 +112,30 @@ def partial_indexing():
     # Areeta:
     file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)]
     # Cristian:
-    # file_list - []
-
-    # Kaeley:
-    # with open('/Users/kaeleylenard/Desktop/data.txt', 'w') as json_file:
-    # Areeta:
-    with open('/Users/AreetaW/Desktop/data.txt', 'w') as json_file:
-    # Cristian:
-    # with open():
-
-        for index in file_list:
-            with open(index) as file:
-                data = json.load(file)
-                data = demjson.decode(data)
-                json.dump(data, json_file)
-
-    json_file.close()
+    # file_list = [f'C:\Test\info{x+1}.txt' for x in range(index_count)]
 
     # pandas will merge all json files alphabetically
-    bases = []
+    bases = []  
     for file in file_list:
         temp = pandas.read_json(file, orient='index')
         bases.append(temp)
 
-        # holds all json files as one big pandas dataframe
-        result = pandas.concat(bases)
+    # holds all json files as one big pandas dataframe    
+    result = pandas.concat(bases)  
 
-        # exports into excel
-        # Kaeley:
-        # result.to_csv()
-        # Areeta:
-        result.to_csv("/Users/AreetaW/Desktop/finalindex.csv")
-        # Cristian:
-        # result.to_csv("C:\Test\/finalindex.csv")
+    # exports into excel
+
+    # Kaeley:
+    # result.to_csv()
+    # Areeta:
+    result.to_csv("/Users/AreetaW/Desktop/finalindex.csv")
+    # Cristian:
+    # result.to_csv("C:\Test\/finalindex.csv")
 
 
 if __name__ == "__main__":
     # tracks time taken to complete indexing
     start_time = time.time()
-
     # loops through all files in DEV
     for subdir, dirs, files in os.walk(dev_directory):
         for file in files:
