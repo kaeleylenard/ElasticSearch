@@ -53,9 +53,11 @@ def write_to_file():
     docid_counter = 0
 
     # Kaeley:
-    #deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+    # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+    # accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
     # Areeta:
-    # deliverable_text = open()
+    # deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
+    # accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w'
     # Cristian:
 
     accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
@@ -116,7 +118,7 @@ def partial_indexing():
     # Kaeley:
     # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
     # Areeta:
-    # deliverable_text = open()
+    # deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
     # Cristian
     deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     with deliverable_text as json_file:
@@ -132,8 +134,10 @@ def partial_indexing():
 
     # Kaeley:
     # file_list = [f'/Users/kaeleylenard/Desktop/info{x+1}.txt' for x in range(index_count)]
+    # url_list = [f'/Users/kaeleylenard/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Areeta:
-    # file_list = []
+    # file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)]
+    # url_list = [f'/Users/AreetaW/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Cristian:
     file_list = [f'C:\Test\info{x + 1}.txt' for x in range(index_count - 1)]
     url_list = [f'C:\Test\info_urls{x + 1}.txt' for x in range(index_count)]
@@ -146,7 +150,7 @@ def partial_indexing():
 
     result = bases[0]
     for i in bases[0:]:
-        result.join(i, lsuffix='_caller', rsuffix='_df1')
+        result.join(i, lsuffix='results', rsuffix='added')
 
     all_urls = []
     for urls in url_list:
@@ -162,7 +166,6 @@ def partial_indexing():
     # Cristian
     result.to_json("C:\Test\/finaltextindex.txt")
     url_result.to_json("C:\Test\/final_url_index.txt")
-
 
 
 if __name__ == "__main__":
@@ -186,7 +189,7 @@ if __name__ == "__main__":
                     data = text.get_text().strip()
                     alphanumeric_sequences += tokenizes(data)
                 add_to_index(alphanumeric_sequences, docid_counter, readl_id)
-                docid_index[readl_id] = json_file[12:]
+                # docid_index[readl_id] = json_file[12:] You can uncomment this to your own length to remove subdirectories
 
             except Exception as e:
                 print("error at:", e)
