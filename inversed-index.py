@@ -30,8 +30,10 @@ def tokenizes(data):
 
     for word in data:
         tokenized = re.sub('[^A-Za-z0-9]+', ' ', str(word))
+        tokenized = tokenized.strip()
         if len(tokenized) >= 2:
-            tokens.append(ps.stem(tokenized))
+            if len(ps.stem(tokenized)) >= 2:
+                tokens.append(ps.stem(tokenized))
     return tokens
 
 
@@ -70,10 +72,12 @@ def add_to_index(document_words, docid_counter):
     for word in document_words:
 
         # calculates tf score for each word
-        freq_of_token = float(document_words.count(word))
-        amount_of_words = float(len(document_words))
-        tf_score = freq_of_token/amount_of_words
-        tf_score = round(tf_score, 5)
+        # freq_of_token = float(document_words.count(word))
+        # amount_of_words = float(len(document_words))
+        # tf_score = freq_of_token/amount_of_words
+        # tf_score = round(tf_score, 5)
+
+        tf_score = 0.0
 
         # decides whether word is unique or not
         if word not in inverse_index:
