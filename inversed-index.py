@@ -12,7 +12,7 @@ import pandas
 # dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 # Cristian:
 dev_directory = 'C:\Test\DEV'
-# dev_directory = 'C:\Test\custom'
+#dev_directory = 'C:\Test\custom'
 
 
 inverse_index = dict()
@@ -53,23 +53,25 @@ def write_to_file():
     docid_counter = 0
 
     # Kaeley:
-    #deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+    # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+    # accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
     # Areeta:
-    # deliverable_text = open()
+    # deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
+    # accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w'
     # Cristian:
-    deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
-    accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
 
+    accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
     with accompanying_text as index_json_file:
         docid_index = {k: v for k, v in sorted(docid_index.items())}  # Sorts dict by key
         json.dump(docid_index, index_json_file)  # Pretty printing
-
-    with deliverable_text as json_file:
-        inverse_index = {k: list(v) for k, v in sorted(inverse_index.items())}  # Sorts dict by key
-        json.dump(inverse_index, json_file)  # Pretty printing
-
-    deliverable_text.close()
     accompanying_text.close()
+
+    deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+    with deliverable_text as json_file:
+        inverse_index = {k: str(v) for k, v in sorted(inverse_index.items())}  # Sorts dict by key
+        json.dump(inverse_index, json_file)  # Pretty printing
+    deliverable_text.close()
+
     inverse_index.clear()
     docid_index.clear()
 
@@ -116,11 +118,11 @@ def partial_indexing():
     # Kaeley:
     # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
     # Areeta:
-    # deliverable_text = open()
+    # deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
     # Cristian
     deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     with deliverable_text as json_file:
-        inverse_index = {k: list(v) for k, v in sorted(inverse_index.items())}
+        inverse_index = {k: str(v) for k, v in sorted(inverse_index.items())}
         json.dump(inverse_index, json_file)
     deliverable_text.close()
 
@@ -132,10 +134,12 @@ def partial_indexing():
 
     # Kaeley:
     # file_list = [f'/Users/kaeleylenard/Desktop/info{x+1}.txt' for x in range(index_count)]
+    # url_list = [f'/Users/kaeleylenard/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Areeta:
-    # file_list = []
+    # file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)]
+    # url_list = [f'/Users/AreetaW/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Cristian:
-    file_list = [f'C:\Test\info{x+1}.txt' for x in range(index_count)]
+    file_list = [f'C:\Test\info{x + 1}.txt' for x in range(index_count - 1)]
     url_list = [f'C:\Test\info_urls{x + 1}.txt' for x in range(index_count)]
 
     # pandas will merge all json files alphabetically
@@ -144,20 +148,22 @@ def partial_indexing():
         temp = pandas.read_json(file, orient='index')
         bases.append(temp)
 
+    result = bases[0]
+    for i in bases[0:]:
+        result.join(i, lsuffix='results', rsuffix='added')
+
     all_urls = []
     for urls in url_list:
-        temps = pandas.read_json(urls,  orient='index')
+        temps = pandas.read_json(urls, orient='index')
         all_urls.append(temps)
-    # holds all json files as one big pandas dataframe
-    result = pandas.concat(bases)
+
     url_result = pandas.concat(all_urls)
     # exports into excel and json file
     # Kaeley:
     # result.to_csv()
     # Areeta:
     # result.to_csv("/Users/AreetaW/Desktop/finalindex.csv")
-    # Cristian:
-    #result.to_csv("C:\Test\/finalindex.csv")
+    # Cristian
     result.to_json("C:\Test\/finaltextindex.txt")
     url_result.to_json("C:\Test\/final_url_index.txt")
 
@@ -183,7 +189,7 @@ if __name__ == "__main__":
                     data = text.get_text().strip()
                     alphanumeric_sequences += tokenizes(data)
                 add_to_index(alphanumeric_sequences, docid_counter, readl_id)
-                docid_index[readl_id] = json_file[12:]
+                # docid_index[readl_id] = json_file[12:] You can uncomment this to your own length to remove subdirectories
 
             except Exception as e:
                 print("error at:", e)
