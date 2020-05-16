@@ -94,8 +94,8 @@ def add_to_index(document_words, docid_counter, real_id):
     # splits indexes into different files
     if docid_counter % 11000 == 0:
         write_to_file()
+   
     tf_score = 0.0
-
     for word in document_words:
         # decides whether word is unique or not
         if word not in inverse_index:
