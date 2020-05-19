@@ -1,5 +1,7 @@
+import json
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+
 
 def find_rare_words(query):
     """
@@ -12,8 +14,13 @@ def find_rare_words(query):
 
     for word in query:
         if word not in stop_words:
-            # stem the word
-            rare_words.append(ps.stem(word))
+            rare_words.append(ps.stem(word))  # stem the word
+
+    # for queries that contain only stopwords, such as "to be or not to be"
+    # just return the entire query - will need to find documents that contain
+    # the exact amount of stopwords in the query (assumption)
+    if len(rare_words) == 0:
+        return query
     return rare_words
 
 
@@ -22,21 +29,50 @@ def iterate_info_files(rare_query):
     Find docs with the query terms.
     present_docs: docs that contain ALL the query terms
     rare_query: updated stemmed query with rare terms and no stop words
-    """
-    # list of dictionaries:
-    # [{word: [docID, score]}
-    present_docs = []
 
-    # we have 6 info.txt files; edit this # if necessary
-    for i in range(6):
-        index_txt = open(f'/Users/kaeleylenard/Desktop/info{i}.txt', 'r')
-        """
-        Pseudocode because I don't have the completed index files yet:
-        1. use a find method to search for a doc that contains all the terms in
-        rare_query and then append it to the present_docs list
-        2. sort present_docs from highest score to lowest score   
-        """
-    return present_docs
+    posting:
+    word : “{(docID, score)}”
+
+    entire file:
+    {“0”: {word : “{(docID, score)}”}}
+    """
+
+    present_docs = []  # holds all curr docs that match the words
+    found = 0
+
+    # Areeta
+    # final_text_index = "/Users/AreetaW/Desktop/finaltextindex.txt"
+    # Kaeley
+    final_text_index = "/Users/kaeleylenard/Desktop/final_text_index.txt"
+    final_url_index = "/Users/kaeleylenard/Desktop/info_urls1.txt"
+    with open(final_url_index) as file:
+        url_response = json.loads(file.read())
+    # Cristian
+    # final_text_index = ''
+
+    with open(final_text_index) as file:
+        text_response = json.loads(file.read())
+        # format for postings {(docID, score)} is a string
+        for (word, posting) in text_response['0'].items():
+            if word in rare_query:
+                for (docID, score) in eval(posting):
+                    for(ID, json_file) in url_response.items():
+                        print(json_file)
+                        # next steps: get url from json file, ranking, MAKE THIS MORE EFFICIENT AAAH
+"""
+# Areeta's:
+
+with open("/Users/AreetaW/Desktop/finaltextindex.txt") as file:
+    response = json.loads(file.read())
+    for (word, postings) in response['0'].items():
+        if rare_words[found] == word:
+            found += 1
+            # took out quotes and curly brackets on both sides 
+            # need to figure out how to unstringify it
+            posting_info = posting_info[1:-1]
+            
+            # add posting_info to present docs
+"""
 
 
 def retrieval_component(query):
@@ -49,10 +85,10 @@ def retrieval_component(query):
     returned_docs = iterate_info_files(query_words)
 
     # return only the top five matches
-    for doc in returned_docs[:5]:
+    # for doc in returned_docs[:5]:
         # buffer the document to get the first line which contains the URL
         # print the URL
-        print(doc)
+        # print(doc)
 
 
 if __name__ == "__main__":
