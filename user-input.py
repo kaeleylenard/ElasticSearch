@@ -26,7 +26,7 @@ def find_rare_words(query):
     return rare_words
 
 
-def ws(rare_query):
+def iterate_info_files(rare_query):
     """
     Find docs with the query terms.
     present_docs: docs that contain ALL the query terms
