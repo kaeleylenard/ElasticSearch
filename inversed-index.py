@@ -9,7 +9,7 @@ import pandas
 # Kaeley:
 dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV'
 # Areeta:
-# dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
+dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 # Cristian:
 # dev_directory = 'C:\Test\DEV'
 # dev_directory = 'C:\Test\custom'
@@ -67,8 +67,8 @@ def write_to_file():
     deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
     accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
     # Areeta:
-    # deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
-    # accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
+    deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
+    accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
     # Cristian:
     # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     # accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
@@ -123,8 +123,8 @@ def partial_indexing():
     deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
     accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
     # Areeta:
-    # deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
-    # accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
+    deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
+    accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
     # Cristian
     # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     # accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
@@ -143,8 +143,8 @@ def partial_indexing():
     file_list = [f'/Users/kaeleylenard/Desktop/info{x+1}.txt' for x in range(index_count)]
     url_list = [f'/Users/kaeleylenard/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Areeta:
-    # file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)]
-    # url_list = [f'/Users/AreetaW/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
+    file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)]
+    url_list = [f'/Users/AreetaW/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Cristian:
     # file_list = [f'C:\Test\info{x + 1}.txt' for x in range(index_count)]
     # url_list = [f'C:\Test\info_urls{x + 1}.txt' for x in range(index_count)]
@@ -171,8 +171,8 @@ def partial_indexing():
     result.to_json(f'/Users/kaeleylenard/Desktop/final_text_index.txt')
     result.to_json(f'/Users/kaeleylenard/Desktop/final_url_index.txt')
     # Areeta:
-    # result.to_json(f'/Users/AreetaW/Desktop/final_text_index.txt')
-    # url_result.to_json(f'/Users/AreetaW/Desktop/final_url_index.txt')
+    result.to_json(f'/Users/AreetaW/Desktop/final_text_index.txt')
+    url_result.to_json(f'/Users/AreetaW/Desktop/final_url_index.txt')
     # Cristian
     # result.to_json("C:\Test\/finaltextindex.txt")
     # url_result.to_json("C:\Test\/final_url_index.txt")
