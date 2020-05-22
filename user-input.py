@@ -1,6 +1,7 @@
 import json
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+import re
 
 
 def find_rare_words(query):
@@ -25,7 +26,7 @@ def find_rare_words(query):
     return rare_words
 
 
-def iterate_info_files(rare_query):
+def ws(rare_query):
     """
     Find docs with the query terms.
     present_docs: docs that contain ALL the query terms
@@ -37,16 +38,16 @@ def iterate_info_files(rare_query):
     # Areeta
     final_text_index = "/Users/AreetaW/Desktop/final_text_index.txt"
     final_url_index = "/Users/AreetaW/Desktop/final_url_index.txt"
-    dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
+    dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV/'
     # Kaeley
     # final_text_index = "/Users/kaeleylenard/Desktop/final_text_index.txt"
     # final_url_index = "/Users/kaeleylenard/Desktop/final_info_urls.txt"
-    # dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV'
+    # dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV/'
     # Cristian
     # final_text_index = "/Users/kaeleylenard/Desktop/final_text_index.txt"
     # final_url_index = "/Users/kaeleylenard/Desktop/final_info_urls.txt"
-    # dev_directory = 'C:\Test\DEV'
-    # dev_directory = 'C:\Test\custom'
+    # dev_directory = 'C:\Test\DEV\'
+    # dev_directory = 'C:\Test\custom\'
 
     # load dict of all urls in index
     with open(final_url_index) as url_file:
@@ -57,21 +58,21 @@ def iterate_info_files(rare_query):
         text_response = json.loads(text_file.read())
         for (word, posting) in text_response['all_pages'].items():
             if word in rare_query:
-                # add appearance of word in format: (word url, word, and td-idf score)
+                posting = re.sub('}', '}, ', str(posting))
+                list_of_postings = eval(posting)[0]
 
-                # current issue: not able to eval posting because multiple sets
-                list_of_postings = eval("[" + posting + "]")
-                print(list_of_postings)
+                # add appearance of word in format: (word url, word, and td-idf score)
                 for (docID, score) in list_of_postings:
-                    url_path = dev_directory + url_response['0'][docID]
-                    url_response = json.loads((open(url_path)).read())
-                    queries_docs.append((url_response['url'], word, score))
+                    url = url_response['0'][str(docID)]
+                    json_path = dev_directory + url_response['0'][str(docID)]
+                    json_response = json.loads((open(json_path)).read())
+                    queries_docs.append((json_response['url'], word, score))
 
     url_file.close()
     text_file.close()
 
-    if len(queries_docs) > 1:
-        return find_intersection(queries_docs)
+    # if len(queries_docs) > 1:
+    #     return find_intersection(queries_docs)
     return queries_docs
 
 
@@ -94,7 +95,7 @@ def retrieval_component(query):
     returned_docs = iterate_info_files(rare_query)
 
     # print only the top five matches based on tf-idf score
-    print(returned_docs.sort(key=lambda x: x[1], reverse=True)[0:5])
+    print(sorted(returned_docs, key=lambda x: x[1], reverse=True)[0:5])
 
 
 if __name__ == "__main__":
