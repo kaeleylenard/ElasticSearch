@@ -7,14 +7,12 @@ app = Flask(__name__)
 
 # specifies route for flask app to run on
 @app.route('/')
-def get():
-    return 'Hello World!'
-
-
-# includes name as a variable
-@app.route('/hello/<name>')
-def hello_name(name):
-    return 'Hello '+ name + '!'
+def get_input():
+    # https://stackoverflow.com/questions/12277933/send-data-from-a-textbox-into-flask
+    # Create a view that accepts a POST request (my_form_post).
+    # Access the form elements in the dictionary request.form.
+    html = "<center> <h1> CS 121: Search Engine Project </h1> </center>"
+    return html
 
 
 if __name__ == '__main__':
