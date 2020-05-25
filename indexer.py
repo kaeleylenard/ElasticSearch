@@ -12,7 +12,7 @@ import pandas
 dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 # Cristian:
 # dev_directory = 'C:\Test\DEV'
-dev_directory = 'C:\Test\custom'
+# dev_directory = 'C:\Test\custom'
 
 
 inverse_index = dict()
@@ -70,8 +70,8 @@ def write_to_file():
     deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
     accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
     # Cristian:
-    deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
-    accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
+    # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+    # accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
 
     with accompanying_text as index_json_file:
         # sorts dict by key
@@ -126,8 +126,8 @@ def partial_indexing():
     deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
     accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
     # Cristian
-    deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
-    accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
+    # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+    # accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
 
     with deliverable_text as json_file:
         inverse_index = {k: str(v) for k, v in sorted(inverse_index.items())}
@@ -146,8 +146,8 @@ def partial_indexing():
     file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)]
     url_list = [f'/Users/AreetaW/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Cristian:
-    file_list = [f'C:\Test\info{x + 1}.txt' for x in range(index_count)]
-    url_list = [f'C:\Test\info_urls{x + 1}.txt' for x in range(index_count)]
+    # file_list = [f'C:\Test\info{x + 1}.txt' for x in range(index_count)]
+    # url_list = [f'C:\Test\info_urls{x + 1}.txt' for x in range(index_count)]
 
     # pandas will merge all json files alphabetically
     bases = []
@@ -182,8 +182,8 @@ def partial_indexing():
     result.to_json(f'/Users/AreetaW/Desktop/final_text_index.txt')
     url_result.to_json(f'/Users/AreetaW/Desktop/final_url_index.txt')
     # Cristian
-    result.to_json("C:\Test\/finaltextindex.txt")
-    url_result.to_json("C:\Test\/final_url_index.txt")
+    # result.to_json("C:\Test\/finaltextindex.txt")
+    # url_result.to_json("C:\Test\/final_url_index.txt")
 
 
 if __name__ == "__main__":
