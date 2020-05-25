@@ -1,15 +1,16 @@
-import os
 from bs4 import BeautifulSoup
 import re
 from nltk.stem import PorterStemmer
 import json
 import time
 import pandas
+import os
+import pickle
 
 # Kaeley:
-# dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV'
+dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV/seal_ics_uci_edu'
 # Areeta:
-dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
+# dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 # Cristian:
 # dev_directory = 'C:\Test\DEV'
 # dev_directory = 'C:\Test\custom'
@@ -64,11 +65,11 @@ def write_to_file():
     docid_counter = 0
 
     # Kaeley:
-    # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
-    # accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
+    deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+    accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
     # Areeta:
-    deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
-    accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
+    # deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
+    # accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
     # Cristian:
     # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     # accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
@@ -94,9 +95,9 @@ def add_to_index(document_words, docid_counter, real_id):
     # splits indexes into different files
     if docid_counter % 11000 == 0:
         write_to_file()
-   
-    tf_score = 0.0
+
     for word in document_words:
+        tf_score = document_words.count(word) / len(document_words)
         # decides whether word is unique or not
         if word not in inverse_index:
             first_appearance = (real_id, tf_score)
@@ -120,11 +121,11 @@ def partial_indexing():
     total_docs += docid_counter
 
     # Kaeley:
-    # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
-    # accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
+    deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+    accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
     # Areeta:
-    deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
-    accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
+    # deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
+    # accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
     # Cristian
     # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     # accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
@@ -140,11 +141,11 @@ def partial_indexing():
     accompanying_text.close()
 
     # Kaeley:
-    # file_list = [f'/Users/kaeleylenard/Desktop/info{x+1}.txt' for x in range(index_count)]
-    # url_list = [f'/Users/kaeleylenard/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
+    file_list = [f'/Users/kaeleylenard/Desktop/info{x+1}.txt' for x in range(index_count)]
+    url_list = [f'/Users/kaeleylenard/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Areeta:
-    file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)]
-    url_list = [f'/Users/AreetaW/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
+    # file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)]
+    # url_list = [f'/Users/AreetaW/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Cristian:
     # file_list = [f'C:\Test\info{x + 1}.txt' for x in range(index_count)]
     # url_list = [f'C:\Test\info_urls{x + 1}.txt' for x in range(index_count)]
@@ -163,7 +164,8 @@ def partial_indexing():
         count += 1
         result = result.join(i, how='outer', lsuffix="_left", rsuffix="_right")
     result = result.fillna('')
-    result['all_pages'] = result["pages1"] + result["pages2"] + result["pages3"] + result["pages4"] + result["pages5"] + result["pages6"]
+    # result['all_pages'] = result["pages1"] + result["pages2"] + result["pages3"] + result["pages4"] + result["pages5"] + result["pages6"]
+    result['all_pages'] = result["pages1"]
     for i in range(index_count):
         del result[f'pages{i + 1}']
 
@@ -176,14 +178,35 @@ def partial_indexing():
 
     # exports into excel and json file
     # Kaeley:
-    # result.to_json(f'/Users/kaeleylenard/Desktop/final_text_index.txt')
-    # result.to_json(f'/Users/kaeleylenard/Desktop/final_url_index.txt')
+    result.to_json(f'/Users/kaeleylenard/Desktop/final_text_index.txt')
+    result.to_json(f'/Users/kaeleylenard/Desktop/final_url_index.txt')
     # Areeta:
-    result.to_json(f'/Users/AreetaW/Desktop/final_text_index.txt')
-    url_result.to_json(f'/Users/AreetaW/Desktop/final_url_index.txt')
+    # result.to_json(f'/Users/AreetaW/Desktop/final_text_index.txt')
+    # url_result.to_json(f'/Users/AreetaW/Desktop/final_url_index.txt')
     # Cristian
     # result.to_json("C:\Test\/finaltextindex.txt")
     # url_result.to_json("C:\Test\/final_url_index.txt")
+
+
+def final_tfidf(txtfile):
+    new_file = open("/Users/kaeleylenard/Desktop/tdidf_scores.pkl", "wb")
+
+    finaltextdict = {}
+    with open(txtfile) as file:
+        text_response = json.loads(file.read())
+        for word, posting in text_response['all_pages'].items():
+            posting = eval(posting)
+            new_postings = set()
+            for docID, tfscore in posting:
+                idf = len(posting) / 2027  # 2027 = number of words in sample im using
+                new_postings.add((docID, tfscore*idf))
+            finaltextdict[word] = new_postings
+
+    pickle.dump(finaltextdict, new_file)
+    # Checking and printing full dict with complete tdidf scores
+    new_file = open("/Users/kaeleylenard/Desktop/tdidf_scores.pkl", "rb")
+    output = pickle.load(new_file)
+    print(output)
 
 
 if __name__ == "__main__":
@@ -206,6 +229,8 @@ if __name__ == "__main__":
                     # gets only text from each tag element
                     data = text.get_text().strip()
                     alphanumeric_sequences += tokenizes(data)
+
+                # new edit: added length of tokenizes(data) to calculate tf
                 add_to_index(alphanumeric_sequences, docid_counter, readl_id)
 
                 # uncomment this to your own length to remove subdirectories
@@ -214,6 +239,7 @@ if __name__ == "__main__":
             except Exception as e:
                 print("error at:", e)
     partial_indexing()
+    final_tfidf("/Users/kaeleylenard/Desktop/final_text_index.txt")
 
     # Statistics
     print("\nREPORT")
