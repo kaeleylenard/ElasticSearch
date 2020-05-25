@@ -58,11 +58,11 @@ def iterate_info_files(rare_query):
         text_response = json.loads(text_file.read())
         for (word, posting) in text_response['all_pages'].items():
             if word in rare_query:
-                posting = re.sub('}', '}, ', str(posting))
-                list_of_postings = eval(posting)[0]
+                posts = re.sub('}', '}, ', str(posting))
+                posts = eval(posts)[0]
 
                 # add appearance of word in format: (word url, word, and td-idf score)
-                for (docID, score) in list_of_postings:
+                for (docID, score) in posts:
                     url = url_response['0'][str(docID)]
                     json_path = dev_directory + url_response['0'][str(docID)]
                     json_response = json.loads((open(json_path)).read())
