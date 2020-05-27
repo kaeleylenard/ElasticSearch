@@ -2,9 +2,11 @@ import os
 from bs4 import BeautifulSoup
 import re
 from nltk.stem import PorterStemmer
+from collections import defaultdict
 import json
 import time
 import pandas
+import math
 
 # Kaeley:
 # dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV'
@@ -17,11 +19,12 @@ dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 
 inverse_index = dict()
 docid_index = dict()
+term_frequency = defaultdict(int)
 docid_counter = 0
 index_count = 0
 word_count = 0
 total_docs = 0
-readl_id = 0
+real_id = 0
 
 
 def tokenizes(data):
@@ -37,13 +40,14 @@ def tokenizes(data):
         tokenized = re.sub('_', ' ', str(tokenized))
         tokenized = tokenized.strip()
 
-        # determine if separated words
+        # determine if separated words b/c of punctuation
         if len(tokenized.split()) > 1:
             for token in tokenized.split():
                 stemmed_word = ps.stem(token)
                 if len(stemmed_word) >= 2:
                     tokens.append(stemmed_word)
         else:
+            # determine if alphanumeric sequences
             if len(ps.stem(tokenized)) >= 2:
                 tokens.append(ps.stem(tokenized))
 
@@ -73,18 +77,21 @@ def write_to_file():
     # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     # accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
 
-    with accompanying_text as index_json_file:
-        # sorts dict by key
-        docid_index = {k: v for k, v in sorted(docid_index.items())}
-        json.dump(docid_index, index_json_file)
-    accompanying_text.close()
-
+    # writes to word indexer file
     with deliverable_text as json_file:
         # sorts dict by key
         inverse_index = {k: str(v) for k, v in sorted(inverse_index.items())}
         # pretty printing
         json.dump(inverse_index, json_file)
     deliverable_text.close()
+
+    # writes to url indexer file
+    with accompanying_text as index_json_file:
+        # sorts dict by key
+        docid_index = {k: v for k, v in sorted(docid_index.items())}
+        # pretty printing
+        json.dump(docid_index, index_json_file)
+    accompanying_text.close()
 
     inverse_index.clear()
     docid_index.clear()
@@ -94,16 +101,25 @@ def add_to_index(document_words, docid_counter, real_id):
     # splits indexes into different files
     if docid_counter % 11000 == 0:
         write_to_file()
-   
-    tf_score = 0.0
+
+    # observes how many times a word shows up in a file
     for word in document_words:
+        term_frequency[word] += 1
+
+    # adds location id and tf_score for each word
+    for word in document_words:
+        tf_score = term_frequency[word]/len(document_words)
+
         # decides whether word is unique or not
         if word not in inverse_index:
-            first_appearance = (real_id, tf_score)
+            first_appearance = (real_id, round(tf_score, 7))
             inverse_index[word] = set()
             inverse_index[word].add(first_appearance)
         else:
-            inverse_index[word].add((real_id, tf_score))
+            inverse_index[word].add((real_id, round(tf_score, 7)))
+
+    # clears tf dict in order to prepare for next file
+    term_frequency.clear()
 
 
 def partial_indexing():
@@ -129,11 +145,13 @@ def partial_indexing():
     # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
     # accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
 
+    # writes to word indexer file
     with deliverable_text as json_file:
         inverse_index = {k: str(v) for k, v in sorted(inverse_index.items())}
         json.dump(inverse_index, json_file)
     deliverable_text.close()
 
+    # writes to url indexer file
     with accompanying_text as index_json_file:
         docid_index = {k: v for k, v in sorted(docid_index.items())}
         json.dump(docid_index, index_json_file)
@@ -186,17 +204,51 @@ def partial_indexing():
     # url_result.to_json("C:\Test\/final_url_index.txt")
 
 
+def calculate_final_tf_idf(text_file):
+    final_indexer = {}
+    with open(text_file) as file:
+        text_response = json.loads(file.read())
+
+        # iterate through each word to update tf-idf score
+        for word, posting in text_response['all_pages'].items():
+            posts = re.sub('}', '}, ', str(posting))
+            posts = eval(posts)[0]
+            new_postings = list()
+
+            for (docID, tf_score) in posts:
+
+                # idf score: log(amount of unique words / how many times words appear)
+                idf = math.log(265652 / len(posts) + 1)
+                new_postings.append((docID, tf_score * idf))
+
+            final_indexer[word] = new_postings
+
+    # Kaeley:
+    # tdidf_score_dict = open(f'', 'w')
+    # Areeta:
+    tdidf_score_dict = open(f'/Users/AreetaW/Desktop/tf_idf_score_dict.txt', 'w')
+    # Cristian:
+    # tdidf_score_dict = open()
+
+    # put final indexer with updated scores into new file
+    with tdidf_score_dict as file:
+        file.write(json.dumps(final_indexer))
+
+    tdidf_score_dict.close()
+
+
 if __name__ == "__main__":
     # tracks time taken to complete indexing
     start_time = time.time()
+
     # loops through all files in DEV
     for subdir, dirs, files in os.walk(dev_directory):
         for file in files:
             json_file = os.path.join(subdir, file)
             docid_counter += 1
-            readl_id += 1
+            real_id += 1
             alphanumeric_sequences = []
-            print(f"current file {docid_counter} {index_count} {word_count} {readl_id} :", json_file)
+            print(f"current file {docid_counter} {index_count} {word_count} {real_id} :", json_file)
 
             # tokenizes all important text from each file and adds to index
             try:
@@ -206,17 +258,27 @@ if __name__ == "__main__":
                     # gets only text from each tag element
                     data = text.get_text().strip()
                     alphanumeric_sequences += tokenizes(data)
-                add_to_index(alphanumeric_sequences, docid_counter, readl_id)
+
+                # alphanumeric_sequences should be words of one json file
+                add_to_index(alphanumeric_sequences, docid_counter, real_id)
 
                 # uncomment this to your own length to remove subdirectories
-                docid_index[readl_id] = json_file[49:]
+                docid_index[real_id] = json_file[49:]
 
             except Exception as e:
                 print("error at:", e)
+
     partial_indexing()
 
-    # Statistics
+    # Kaeley:
+    # calculate_final_tf_idf(f'/Users/kaeleylenard/Desktop/final_text_index.txt')
+    # Areeta:
+    calculate_final_tf_idf(f'/Users/AreetaW/Desktop/final_text_index.txt')
+    # Cristian
+    # calculate_final_tf_idf()
+
+    # statistics
     print("\nREPORT")
-    print("Number of Indexed Documents:", total_docs, " ", readl_id)
+    print("Number of Indexed Documents:", total_docs, " ", real_id)
     print("Number of Unique Words:", word_count)
     print("--- %s seconds ---" % (time.time() - start_time))
