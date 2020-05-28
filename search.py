@@ -36,17 +36,17 @@ def iterate_info_files(rare_query):
     queries_docs = []
 
     # Areeta
-    final_text_index = "/Users/AreetaW/Desktop/final_text_index.txt"
-    final_url_index = "/Users/AreetaW/Desktop/final_url_index.txt"
-    dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV/'
+    #final_text_index = "/Users/AreetaW/Desktop/final_text_index.txt"
+    #final_url_index = "/Users/AreetaW/Desktop/final_url_index.txt"
+    #dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV/'
     # Kaeley
     # final_text_index = "/Users/kaeleylenard/Desktop/final_text_index.txt"
     # final_url_index = "/Users/kaeleylenard/Desktop/final_info_urls.txt"
     # dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV/'
     # Cristian
-    # final_text_index = "/Users/kaeleylenard/Desktop/final_text_index.txt"
-    # final_url_index = "/Users/kaeleylenard/Desktop/final_info_urls.txt"
-    # dev_directory = 'C:\Test\DEV\'
+    final_text_index = "C:\Test\/final_text_index.txt"
+    final_url_index = "C:\Test\/final_url_index.txt"
+    dev_directory = 'C:\Test\DEV\/'
     # dev_directory = 'C:\Test\custom\'
 
     # load dict of all urls in index
@@ -62,7 +62,7 @@ def iterate_info_files(rare_query):
                 posts = eval(posts)[0]
 
                 # add appearance of word in format: (word url, word, and td-idf score)
-                for (docID, score) in posts:
+                for (docID, score, date) in posts:
                     url = url_response['0'][str(docID)]
                     json_path = dev_directory + url_response['0'][str(docID)]
                     json_response = json.loads((open(json_path)).read())
@@ -82,7 +82,7 @@ def find_intersection(queries_docs):
     intersections = 0
     while intersections < 4:
         for (word, url) in queries_docs.values():
-            print("asdfsa")
+            print(word, ' ', url)
 
 
 def retrieval_component(query):
@@ -99,6 +99,7 @@ def retrieval_component(query):
 
 
 if __name__ == "__main__":
-    user_query = input("Search: ")
+    # user_query = input("Search: ")
+    user_query = 'cristina lopes'
     split_query = user_query.split()
     retrieval_component(split_query)
