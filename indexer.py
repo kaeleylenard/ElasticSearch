@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from nltk.stem import PorterStemmer
 from collections import defaultdict
+from collections import Counter
 import json
 import time
 import pandas
@@ -253,6 +254,17 @@ if __name__ == "__main__":
             # tokenizes all important text from each file and adds to index
             try:
                 soup = BeautifulSoup(open(json_file), 'html.parser')
+
+                # includes all titles and important headers
+                for text in soup.findAll(["title", re.compile('^h[1-3]$')]):
+                    data = text.get_text().strip()
+                    tier_1 = {**tier_1, **(Counter(tokenizes(data)))}
+
+                # includes all bolded or strong words and slightly less important headers
+                for text in soup.findAll(["b", "strong", re.compile('^h[1-3]$')]):
+                    data = text.get_text().strip()
+                    tier_2 = {**tier_2, **(Counter(tokenizes(data)))}
+
                 for text in soup.findAll(["title", "p", "b", re.compile('^h[1-6]$')]):
 
                     # gets only text from each tag element
