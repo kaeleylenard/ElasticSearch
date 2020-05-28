@@ -98,26 +98,35 @@ def write_to_file():
     docid_index.clear()
 
 
-def add_to_index(document_words, docid_counter, real_id):
+def add_to_index(alphanumeric_sequences, docid_counter, real_id, tier_1, tier_2):
     # splits indexes into different files
     if docid_counter % 11000 == 0:
         write_to_file()
 
     # observes how many times a word shows up in a file
-    for word in document_words:
+    for word in alphanumeric_sequences:
         term_frequency[word] += 1
 
     # adds location id and tf_score for each word
-    for word in document_words:
-        tf_score = term_frequency[word]/len(document_words)
+    for word in alphanumeric_sequences:
+        tf_score = round(term_frequency[word]/len(alphanumeric_sequences), 7)
+
+        # determines whether word is important or not
+        try:
+            if tier_1[word]:
+                tf_score += 1
+            elif tier_2[word]:
+                tf_score += 0.5
+        except Exception:
+            continue
 
         # decides whether word is unique or not
         if word not in inverse_index:
-            first_appearance = (real_id, round(tf_score, 7))
+            first_appearance = (real_id, tf_score)
             inverse_index[word] = set()
             inverse_index[word].add(first_appearance)
         else:
-            inverse_index[word].add((real_id, round(tf_score, 7)))
+            inverse_index[word].add((real_id, tf_score))
 
     # clears tf dict in order to prepare for next file
     term_frequency.clear()
@@ -196,7 +205,7 @@ def partial_indexing():
     # exports into excel and json file
     # Kaeley:
     # result.to_json(f'/Users/kaeleylenard/Desktop/final_text_index.txt')
-    # result.to_json(f'/Users/kaeleylenard/Desktop/final_url_index.txt')
+    # url_result.to_json(f'/Users/kaeleylenard/Desktop/final_url_index.txt')
     # Areeta:
     result.to_json(f'/Users/AreetaW/Desktop/final_text_index.txt')
     url_result.to_json(f'/Users/AreetaW/Desktop/final_url_index.txt')
@@ -206,8 +215,9 @@ def partial_indexing():
 
 
 def calculate_final_tf_idf(text_file):
+
     final_indexer = {}
-    with open(text_file) as file:
+    with open(text_file, "r") as file:
         text_response = json.loads(file.read())
 
         # iterate through each word to update tf-idf score
@@ -219,8 +229,8 @@ def calculate_final_tf_idf(text_file):
             for (docID, tf_score) in posts:
 
                 # idf score: log(amount of unique words / how many times words appear)
-                idf = math.log(265652 / len(posts) + 1)
-                new_postings.append((docID, tf_score * idf))
+                idf = math.log(270526 / len(posts) + 1)
+                new_postings.append((docID, round(tf_score * idf, 7)))
 
             final_indexer[word] = new_postings
 
@@ -251,7 +261,15 @@ if __name__ == "__main__":
             alphanumeric_sequences = []
             print(f"current file {docid_counter} {index_count} {word_count} {real_id} :", json_file)
 
-            # tokenizes all important text from each file and adds to index
+            # each tier represents level of importance
+
+            # tier 1 = 1 extra point
+            tier_1 = dict()
+
+            # tier 2 = 0.5 extra point
+            tier_2 = dict()
+
+            # tokenizes text from each file and adds to index
             try:
                 soup = BeautifulSoup(open(json_file), 'html.parser')
 
@@ -272,7 +290,7 @@ if __name__ == "__main__":
                     alphanumeric_sequences += tokenizes(data)
 
                 # alphanumeric_sequences should be words of one json file
-                add_to_index(alphanumeric_sequences, docid_counter, real_id)
+                add_to_index(alphanumeric_sequences, docid_counter, real_id, tier_1, tier_2)
 
                 # uncomment this to your own length to remove subdirectories
                 docid_index[real_id] = json_file[49:]
