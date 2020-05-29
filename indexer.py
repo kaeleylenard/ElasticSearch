@@ -20,7 +20,6 @@ dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 
 inverse_index = dict()
 docid_index = dict()
-term_frequency = defaultdict(int)
 docid_counter = 0
 index_count = 0
 word_count = 0
@@ -104,6 +103,7 @@ def add_to_index(alphanumeric_sequences, docid_counter, real_id, tier_1, tier_2)
         write_to_file()
 
     # observes how many times a word shows up in a file
+    term_frequency = defaultdict(int)
     for word in alphanumeric_sequences:
         term_frequency[word] += 1
 
@@ -115,18 +115,20 @@ def add_to_index(alphanumeric_sequences, docid_counter, real_id, tier_1, tier_2)
         try:
             if tier_1[word]:
                 tf_score += 1
-            elif tier_2[word]:
+            if tier_2[word]:
                 tf_score += 0.5
-        except Exception:
-            continue
+        except:
+            pass
 
-        # decides whether word is unique or not
-        if word not in inverse_index:
-            first_appearance = (real_id, tf_score)
-            inverse_index[word] = set()
-            inverse_index[word].add(first_appearance)
-        else:
-            inverse_index[word].add((real_id, tf_score))
+        finally:
+
+            # decides whether word is unique or not
+            if word not in inverse_index:
+                first_appearance = (real_id, tf_score)
+                inverse_index[word] = set()
+                inverse_index[word].add(first_appearance)
+            else:
+                inverse_index[word].add((real_id, tf_score))
 
     # clears tf dict in order to prepare for next file
     term_frequency.clear()
@@ -273,6 +275,12 @@ if __name__ == "__main__":
             try:
                 soup = BeautifulSoup(open(json_file), 'html.parser')
 
+                for text in soup.findAll(["title", "p", "b", re.compile('^h[1-6]$')]):
+
+                    # gets only text from each tag element
+                    data = text.get_text().strip()
+                    alphanumeric_sequences += tokenizes(data)
+
                 # includes all titles and important headers
                 for text in soup.findAll(["title", re.compile('^h[1-3]$')]):
                     data = text.get_text().strip()
@@ -282,12 +290,6 @@ if __name__ == "__main__":
                 for text in soup.findAll(["b", "strong", re.compile('^h[1-3]$')]):
                     data = text.get_text().strip()
                     tier_2 = {**tier_2, **(Counter(tokenizes(data)))}
-
-                for text in soup.findAll(["title", "p", "b", re.compile('^h[1-6]$')]):
-
-                    # gets only text from each tag element
-                    data = text.get_text().strip()
-                    alphanumeric_sequences += tokenizes(data)
 
                 # alphanumeric_sequences should be words of one json file
                 add_to_index(alphanumeric_sequences, docid_counter, real_id, tier_1, tier_2)
