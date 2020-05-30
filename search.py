@@ -110,7 +110,7 @@ def weigh_query(query):
 
         final.append(json_response['url'])
     print(f"--- url  {time.time() - url_time} seconds ---")
-    print("--- %s seconds ---" % (time.time() - start_time))
+    # print("--- %s seconds ---" % (time.time() - start_time))
 
     # PRINTING OUT SITES
     for i in final:

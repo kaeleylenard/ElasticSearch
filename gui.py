@@ -33,7 +33,9 @@ def get_input_text():
 
 def display_results(queries):
     print('testing', queries)
-    return render_template('results.html', rkeyterm=queries)
+    sites = search.retrieval_component(queries.split())
+    print(sites)
+    return render_template('results.html', keyterm=queries, sites=sites)
 
 
 if __name__ == '__main__':

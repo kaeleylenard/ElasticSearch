@@ -34,11 +34,10 @@
             {{ keyterm }}:
         </div>
         <div class="results">
-            result1<br>
-            result2<br>
-            result3<br>
-            result4<br>
-            result5<br>
+            {% for s in sites %}
+            {{s}} <br>
+            {%endfor%}
         </div>
+
     </body>
 </html>
