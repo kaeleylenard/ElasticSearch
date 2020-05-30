@@ -1,32 +1,23 @@
 import json
-from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 import re
+from collections import defaultdict
+import math
+import time
+
+term_frequency = defaultdict(int)
 
 
-def find_rare_words(query):
+def stem_words(query):
     """
     query: list of original query terms
-    rare_words: list of query terms that are stemmed and not stop words
+    return: list of stemmed query terms
     """
     ps = PorterStemmer()
-    stop_words = set(stopwords.words('english'))
-    rare_words = list()
-
-    for word in query:
-        if word not in stop_words:
-            # add stemmed word to list
-            rare_words.append(ps.stem(word))
-
-    # for queries that contain only stopwords, such as "to be or not to be"
-    # just return the entire query - will need to find documents that contain
-    # the exact amount of stopwords in the query (assumption)
-    if len(rare_words) == 0:
-        return query
-    return rare_words
+    return [(ps.stem(word)) for word in query]
 
 
-def iterate_info_files(rare_query):
+def iterate_info_files(stemmed_query):
     """
     Find docs with the query terms.
     present_docs: docs that contain ALL the query terms
@@ -41,13 +32,13 @@ def iterate_info_files(rare_query):
     #dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV/'
     # Kaeley
     # final_text_index = "/Users/kaeleylenard/Desktop/final_text_index.txt"
-    # final_url_index = "/Users/kaeleylenard/Desktop/final_info_urls.txt"
-    # dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV/'
+    # final_url_index = "/Users/kaeleylenard/Desktop/final_url_index.txt"
+    # dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/SearchEngine/DEV'
     # Cristian
-    final_text_index = "C:\Test\/final_text_index.txt"
-    final_url_index = "C:\Test\/final_url_index.txt"
-    dev_directory = 'C:\Test\DEV\/'
-    # dev_directory = 'C:\Test\custom\'
+    final_text_index = "C:\Test\/areeta\/final_text_index.txt"
+    final_url_index = "C:\Test\/areeta\/final_url_index.txt"
+    dev_directory = 'C:\Test\DEV'
+    # dev_directory = 'C:\Test\custom'
 
     # load dict of all urls in index
     with open(final_url_index) as url_file:
@@ -56,33 +47,46 @@ def iterate_info_files(rare_query):
     # load dict of inverted index
     with open(final_text_index) as text_file:
         text_response = json.loads(text_file.read())
-        for (word, posting) in text_response['all_pages'].items():
-            if word in rare_query:
-                posts = re.sub('}', '}, ', str(posting))
-                posts = eval(posts)[0]
 
-                # add appearance of word in format: (word url, word, and td-idf score)
-                for (docID, score, date) in posts:
-                    url = url_response['0'][str(docID)]
-                    json_path = dev_directory + url_response['0'][str(docID)]
-                    json_response = json.loads((open(json_path)).read())
-                    queries_docs.append((json_response['url'], word, score))
+        for word in stemmed_query:
+            results = text_response['all_pages'][word]
+            posts = re.sub('}{', ', ', str(results))
+            posts = eval(posts)
+            #posts = re.sub('}', '}, ', str(results))
+            #posts = eval(posts)[0]
+
+            posts = sorted(posts, key=lambda tup: tup[1], reverse=True)[:10]
+            #print(posts)
+            for (docID, score) in posts:
+
+                json_path = dev_directory + "/" + url_response['0'][str(docID)]
+                #print(url_response['0'][str(docID)])
+                # {'url': 'https://blablabla', 'content':}
+                json_response = json.loads((open(json_path)).read())
+
+                # queries_docs.append((docID, score))
+                queries_docs.append(json_response['url'])
 
     url_file.close()
     text_file.close()
-
-    # if len(queries_docs) > 1:
-    #     return find_intersection(queries_docs)
     return queries_docs
 
 
-def find_intersection(queries_docs):
-    # HELLO I AM HAVING AN ISSUE DETERMINING HOW TO FIND INTERSECTIONS IF IT'S MULTIPLE WORDS
-    # like if word has 3 urls and another word has 3 urls but only 1 match up
-    intersections = 0
-    while intersections < 4:
-        for (word, url) in queries_docs.values():
-            print(word, ' ', url)
+def weigh_query(query):
+    """ Getting and printing information about each query term """
+    for word in query:
+        term_frequency[word] += 1
+
+    # adds location id and tf_score for each word
+    for word in query:
+        term_freq = term_frequency[word]
+        tf_score = 1 + math.log10(term_freq)
+        dict_length = len(term_frequency)
+        # idf score: log(amount of unique words / how many times words appear)
+        idf = math.log10(dict_length / term_freq)
+
+        # Testing:
+        # print(f'word:{word}, tf_score:{tf_score}, unique_words:{dict_length}, idf:{idf}')
 
 
 def retrieval_component(query):
@@ -91,15 +95,23 @@ def retrieval_component(query):
     query_words: stemmed, rare query terms
     returned_docs: docs that contain ALL the query_words
     """
-    rare_query = find_rare_words(query)
-    returned_docs = iterate_info_files(rare_query)
+    #weigh_query(query)
+    returned_docs = iterate_info_files(query)
 
     # print only the top five matches based on tf-idf score
-    print(sorted(returned_docs, key=lambda x: x[1], reverse=True)[0:5])
+    # print(sorted(returned_docs, key=lambda x: x[1], reverse=True)[0:5])
+    print("--- %s seconds ---" % (time.time() - start_time))
+    for site in sorted(returned_docs, key=lambda x: x[1], reverse=True)[0:5]:
+        print(site)
 
 
 if __name__ == "__main__":
     # user_query = input("Search: ")
-    user_query = 'cristina lopes'
+    print('Search')
+    user_query = input("Search: ")
+    start_time = time.time()
     split_query = user_query.split()
-    retrieval_component(split_query)
+    print(split_query)
+    # stem query terms to match with final indices
+    retrieval_component(stem_words(split_query))
+

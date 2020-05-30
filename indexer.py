@@ -3,19 +3,19 @@ from bs4 import BeautifulSoup
 import re
 from nltk.stem import PorterStemmer
 from collections import defaultdict
-from collections import Counter
 import json
 import time
 import pandas
 import math
+from htmldate import find_date
 
 # Kaeley:
-dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/SearchEngine/DEV/aiclub_uci_edu'
+# dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/Assignment3/DEV'
 # Areeta:
 # dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 # Cristian:
 # dev_directory = 'C:\Test\DEV'
-# dev_directory = 'C:\Test\custom'
+dev_directory = 'C:\Test\custom'
 
 
 inverse_index = dict()
@@ -69,14 +69,14 @@ def write_to_file():
     docid_counter = 0
 
     # Kaeley:
-    deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
-    accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
+    # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+    # accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
     # Areeta:
     # deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
     # accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
     # Cristian:
-    # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
-    # accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
+    deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+    accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
 
     # writes to word indexer file
     with deliverable_text as json_file:
@@ -98,7 +98,7 @@ def write_to_file():
     docid_index.clear()
 
 
-def add_to_index(alphanumeric_sequences, docid_counter, real_id, tier_1, tier_2):
+def add_to_index(document_words, docid_counter, real_id, date):
     # splits indexes into different files
     if docid_counter % 11000 == 0:
         write_to_file()
@@ -122,11 +122,11 @@ def add_to_index(alphanumeric_sequences, docid_counter, real_id, tier_1, tier_2)
 
         # decides whether word is unique or not
         if word not in inverse_index:
-            first_appearance = (real_id, tf_score)
+            first_appearance = (real_id, round(tf_score, 7), date)
             inverse_index[word] = set()
             inverse_index[word].add(first_appearance)
         else:
-            inverse_index[word].add((real_id, tf_score))
+            inverse_index[word].add((real_id, round(tf_score, 7), date))
 
     # clears tf dict in order to prepare for next file
     term_frequency.clear()
@@ -146,14 +146,14 @@ def partial_indexing():
     total_docs += docid_counter
 
     # Kaeley:
-    deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
-    accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
+    # deliverable_text = open(f'/Users/kaeleylenard/Desktop/info{index_count}.txt', 'w')
+    # accompanying_text = open(f'/Users/kaeleylenard/Desktop/info_urls{index_count}.txt', 'w')
     # Areeta:
     # deliverable_text = open(f'/Users/AreetaW/Desktop/info{index_count}.txt', 'w')
     # accompanying_text = open(f'/Users/AreetaW/Desktop/info_urls{index_count}.txt', 'w')
     # Cristian
-    # deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
-    # accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
+    deliverable_text = open(f'C:\Test\info{index_count}.txt', 'w')
+    accompanying_text = open(f'C:\Test\info_urls{index_count}.txt', 'w')
 
     # writes to word indexer file
     with deliverable_text as json_file:
@@ -168,14 +168,14 @@ def partial_indexing():
     accompanying_text.close()
 
     # Kaeley:
-    file_list = [f'/Users/kaeleylenard/Desktop/info{x+1}.txt' for x in range(index_count)]
-    url_list = [f'/Users/kaeleylenard/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
+    # file_list = [f'/Users/kaeleylenard/Desktop/info{x+1}.txt' for x in range(index_count)]
+    # url_list = [f'/Users/kaeleylenard/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Areeta:
     # file_list = [f'/Users/AreetaW/Desktop/info{x+1}.txt' for x in range(index_count)]
     # url_list = [f'/Users/AreetaW/Desktop/info_urls{x+1}.txt' for x in range(index_count)]
     # Cristian:
-    # file_list = [f'C:\Test\info{x + 1}.txt' for x in range(index_count)]
-    # url_list = [f'C:\Test\info_urls{x + 1}.txt' for x in range(index_count)]
+    file_list = [f'C:\Test\info{x + 1}.txt' for x in range(index_count)]
+    url_list = [f'C:\Test\info_urls{x + 1}.txt' for x in range(index_count)]
 
     # pandas will merge all json files alphabetically
     bases = []
@@ -204,14 +204,14 @@ def partial_indexing():
 
     # exports into excel and json file
     # Kaeley:
-    result.to_json(f'/Users/kaeleylenard/Desktop/final_text_index.txt')
-    url_result.to_json(f'/Users/kaeleylenard/Desktop/final_url_index.txt')
+    # result.to_json(f'/Users/kaeleylenard/Desktop/final_text_index.txt')
+    # result.to_json(f'/Users/kaeleylenard/Desktop/final_url_index.txt')
     # Areeta:
     # result.to_json(f'/Users/AreetaW/Desktop/final_text_index.txt')
     # url_result.to_json(f'/Users/AreetaW/Desktop/final_url_index.txt')
     # Cristian
-    # result.to_json("C:\Test\/finaltextindex.txt")
-    # url_result.to_json("C:\Test\/final_url_index.txt")
+    result.to_json("C:\Test\/final_text_index.txt")
+    url_result.to_json("C:\Test\/final_url_index.txt")
 
 
 def calculate_final_tf_idf(text_file):
@@ -235,11 +235,11 @@ def calculate_final_tf_idf(text_file):
             final_indexer[word] = new_postings
 
     # Kaeley:
-    tdidf_score_dict = open(f'/Users/kaeleylenard/Desktop/tf_idf_score_dict.txt', 'w')
+    # tdidf_score_dict = open(f'', 'w')
     # Areeta:
     # tdidf_score_dict = open(f'/Users/AreetaW/Desktop/tf_idf_score_dict.txt', 'w')
     # Cristian:
-    # tdidf_score_dict = open()
+    tdidf_score_dict = open("C:\Test\/tf_idf_score_dict.txt", 'w')
 
     # put final indexer with updated scores into new file
     with tdidf_score_dict as file:
@@ -274,6 +274,7 @@ if __name__ == "__main__":
                 soup = BeautifulSoup(open(json_file), 'html.parser')
 
                 for text in soup.findAll(["title", "p", "b", re.compile('^h[1-6]$')]):
+
                     # gets only text from each tag element
                     data = text.get_text().strip()
                     alphanumeric_sequences += tokenizes(data)
@@ -298,7 +299,7 @@ if __name__ == "__main__":
                 add_to_index(alphanumeric_sequences, docid_counter, real_id, tier_1, tier_2)
 
                 # uncomment this to your own length to remove subdirectories
-                docid_index[real_id] = json_file[49:]
+                #docid_index[real_id] = json_file[49:]
 
             except Exception as e:
                 print("error at:", e)
@@ -306,11 +307,11 @@ if __name__ == "__main__":
     partial_indexing()
 
     # Kaeley:
-    calculate_final_tf_idf(f'/Users/kaeleylenard/Desktop/final_text_index.txt')
+    # calculate_final_tf_idf(f'/Users/kaeleylenard/Desktop/final_text_index.txt')
     # Areeta:
     # calculate_final_tf_idf(f'/Users/AreetaW/Desktop/final_text_index.txt')
     # Cristian
-    # calculate_final_tf_idf()
+    calculate_final_tf_idf("C:\Test\/final_text_index.txt")
 
     # statistics
     print("\nREPORT")
