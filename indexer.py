@@ -10,7 +10,7 @@ import pandas
 import math
 
 # Kaeley:
-dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/SearchEngine/DEV/aiclub_uci_edu'
+dev_directory = '/Users/kaeleylenard/Documents/CS121-Spring2020/SearchEngine/DEV'
 # Areeta:
 # dev_directory = '/Users/AreetaW/Desktop/cs/cs-121/assignment3/DEV'
 # Cristian:

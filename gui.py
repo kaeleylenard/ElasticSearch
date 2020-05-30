@@ -33,7 +33,7 @@ def get_input_text():
 
 def display_results(queries):
     print('testing', queries)
-    return render_template('results.html', keyterm=queries)
+    return render_template('results.html', rkeyterm=queries)
 
 
 if __name__ == '__main__':
