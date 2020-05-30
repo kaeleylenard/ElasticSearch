@@ -100,7 +100,7 @@ def weigh_query(query):
         json_response = json.loads((open(json_path)).read())
         final.append(json_response['url'])
     url_file.close()
-    print(f"--- time  {time.time() - start_time} seconds ---")
+
     return final
 
 
@@ -115,10 +115,10 @@ def retrieval_component(query):
     returned_docs = weigh_query(rare_query)
     for links in returned_docs:
         print(links)
+    return returned_docs
 
 
 if __name__ == "__main__":
     user_query = input("Search: ")
-    start_time = time.time()
     split_query = user_query.split()
     retrieval_component(split_query)
