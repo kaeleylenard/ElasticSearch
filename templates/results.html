@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Zot Search</title>
+        <title>ZotSearch</title>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
         <style>
            html, body {
                 background-color: #E8F6F3;
@@ -9,35 +11,50 @@
                 position: absolute;
                 width: 100%;
                 top: 20%;
-                font-family: Arial;
+                font-family: Montserrat;
             }
             .head1 {
                 font-size:100px;
                 font-weight:bold;
+                color: #0064A4;
             }
             .search{
                 font-size:50px;
-                color:#252627;
+                color: #FFD200;
             }
             .results{
-                font-size:50px;
+                font-size:18px;
                 color:#252627;
                 #margin-left: -300px;
+                line-height: 30px;
             }
+
+            button{
+                font-size: 15px;
+                font-family: Montserrat;
+                background-color: #e0e0e0;
+                border: none;
+            }
+
+            button:hover {
+                background: #c9c9c9;
         </style>
+
     </head>
     <body>
         <header>
-            <div class="head1">Zot Search</div>
+            <div class="head1">ZotSearch</div>
         </header>
         <div class="search">
-            {{ keyterm }}:
+            <b> {{ keyterm }}: </b>
         </div>
         <div class="results">
-            {% for s in sites %}
-            {{s}} <br>
-            {%endfor%}
+            <u>{% for s in sites %}
+                {{s}} <br>
+                {%endfor%} </u>
         </div>
 
+    <br />
+    <a href = "http://0.0.0.0:5000/"> <button> back </button> </a>
     </body>
 </html>
