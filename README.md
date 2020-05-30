@@ -19,7 +19,7 @@ pip install Flask
 
 ## Usage
 
-In order to run this program, run gui.py. Check to check if app is running, go to localhost:5000/.
+In order to run this program, run gui.py. In order to check if app is running, go to localhost:5000/.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
